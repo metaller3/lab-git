@@ -1,12 +1,12 @@
 import unittest
 
-from labs.lab3.core.dice import Dice
-from labs.lab3.core.unknown_code_error import UnknownCodeError
-from labs.lab3.hero.hero import Hero
-from labs.lab3.hero.hero_class import HeroClass
-from labs.lab3.item.default_catalog import IRON_SWORD, create_default_catalog
-from labs.lab3.item.enchantment import FIERY, STURDY
-from labs.lab3.world.forest import Forest
+from lab3_project.lab3.core.dice import Dice
+from lab3_project.lab3.core.unknown_code_error import UnknownCodeError
+from lab3_project.lab3.hero.hero import Hero
+from lab3_project.lab3.hero.hero_class import HeroClass
+from lab3_project.lab3.item.default_catalog import IRON_SWORD, create_default_catalog
+from lab3_project.lab3.item.enchantment import FIERY, STURDY
+from lab3_project.lab3.world.forest import Forest
 
 
 class Lab3Test(unittest.TestCase):
