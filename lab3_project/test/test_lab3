@@ -1,0 +1,62 @@
+import unittest
+
+from labs.lab3.core.dice import Dice
+from labs.lab3.core.unknown_code_error import UnknownCodeError
+from labs.lab3.hero.hero import Hero
+from labs.lab3.hero.hero_class import HeroClass
+from labs.lab3.item.default_catalog import IRON_SWORD, create_default_catalog
+from labs.lab3.item.enchantment import FIERY, STURDY
+from labs.lab3.world.forest import Forest
+
+
+class Lab3Test(unittest.TestCase):
+
+    def test_singleton(self):
+        self.assertIs(Dice(), Dice())
+
+    def test_dice_seed_is_reproducible(self):
+        dice = Dice()
+        dice.reseed(42)
+        first = [dice.roll(1, 100) for _ in range(5)]
+        dice.reseed(42)
+        self.assertEqual(first, [dice.roll(1, 100) for _ in range(5)])
+
+    def test_prototype_copy_is_independent(self):
+        catalog = create_default_catalog()
+        copy = catalog.create(IRON_SWORD)
+        copy.enchant(FIERY)
+        self.assertEqual(catalog.create(IRON_SWORD).enchantments, ())
+        self.assertEqual(copy.damage, 23)
+
+    def test_wrong_enchantment_rejected(self):
+        sword = create_default_catalog().create(IRON_SWORD)
+        with self.assertRaises(ValueError):
+            sword.enchant(STURDY)
+
+    def test_unknown_item(self):
+        with self.assertRaises(UnknownCodeError):
+            create_default_catalog().create("nope")
+
+    def test_builder_validation(self):
+        with self.assertRaises(ValueError):
+            Hero.Builder().set_hero_class(HeroClass.MAGE).build()
+
+    def test_abstract_factory_kits(self):
+        catalog = create_default_catalog()
+        kit = HeroClass.MAGE.starter_kit(catalog)
+        self.assertEqual(kit.create_weapon().code, "apprentice-staff")
+        self.assertEqual(kit.create_armor().code, "linen-robe")
+
+    def test_expedition_is_reproducible(self):
+        catalog = create_default_catalog()
+
+        def run():
+            hero = (Hero.Builder().set_name("A").set_hero_class(HeroClass.WARRIOR)
+                    .set_starter_kit(HeroClass.WARRIOR.starter_kit(catalog)).build())
+            return Forest(catalog).explore(hero, 7).battle.events
+
+        self.assertEqual(run(), run())
+
+
+if __name__ == "__main__":
+    unittest.main()
